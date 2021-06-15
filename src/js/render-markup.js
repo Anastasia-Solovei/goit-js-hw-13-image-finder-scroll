@@ -69,7 +69,6 @@ function onFetchError() {
 const onEntry = (entries, SELF) => {
   entries.forEach(entry => {
     if (entry.isIntersecting === true && imgsApiService.query !== '') {
-      console.log('Пора грузить еще картинки');
       fetchGalleryImages();
     }
   });
