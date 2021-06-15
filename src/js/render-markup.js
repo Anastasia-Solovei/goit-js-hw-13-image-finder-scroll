@@ -14,9 +14,6 @@ const refs = getRefs();
 const imgsApiService = new API();
 
 refs.searchForm.addEventListener('submit', onSearch);
-refs.loadMoreBtn.addEventListener('click', fetchGalleryImages);
-
-refs.loadMoreBtn.classList.add('is-hidden');
 
 function onSearch(e) {
   e.preventDefault();
@@ -46,12 +43,6 @@ function fetchGalleryImages() {
     //   // basicLightbox.create(modalImgTpl(hits)).show();
     //   console.log(e.target);
     // }
-
-    refs.loadMoreBtn.classList.remove('is-hidden');
-
-    if (hits.length < 12) {
-      refs.loadMoreBtn.classList.add('is-hidden');
-    }
   });
 }
 
@@ -63,19 +54,10 @@ function appendImgsMarkup(hits) {
   }
 
   refs.galleryContainer.insertAdjacentHTML('beforeend', galleryImgTpl(hits));
-
-  smoothScrolling();
 }
 
 function clearGalleryContainer() {
   refs.galleryContainer.innerHTML = '';
-}
-
-function smoothScrolling() {
-  refs.scrollElem.scrollIntoView({
-    behavior: 'smooth',
-    block: 'end',
-  });
 }
 
 function onFetchError() {
@@ -83,3 +65,19 @@ function onFetchError() {
     text: 'Please enter your query!',
   });
 }
+
+const onEntry = (entries, SELF) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting === true && imgsApiService.query !== '') {
+      console.log('Пора грузить еще картинки');
+      fetchGalleryImages();
+    }
+  });
+};
+
+const options = {
+  rootMargin: '200px',
+};
+
+const observer = new IntersectionObserver(onEntry, options);
+observer.observe(refs.scrollContainer);
